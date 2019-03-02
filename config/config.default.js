@@ -19,7 +19,7 @@ module.exports = appInfo => {
   //     // 用户名
   //     user: 'root',
   //     // 密码
-  //     password: '123!@#qweQWE',
+  //     password: '',
   //     // 数据库名
   //     database: 'youlan',
   //   },
@@ -35,7 +35,7 @@ module.exports = appInfo => {
     port: 3306,
     database: 'youlan',
     user: 'root',
-    password: '123!@#qweQWE',
+    password: '',
     // app: true,
     // agent: false,
     define: {
