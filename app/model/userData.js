@@ -19,6 +19,8 @@ module.exports = app => {
     timestamps: false,
     freezeTableName: true,
   });
-
+  UserData.associate = function() {
+    UserData.belongsTo(app.model.UserInfo, { foreignKey: 'uid' });
+  };
   return UserData;
 };
