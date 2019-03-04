@@ -27,6 +27,14 @@ class MainService extends require('egg').Service {
     });
     return result;
   }
+  async raceDel(id) {
+    const result = await this.ctx.model.RaceInfo.destroy({
+      where: {
+        id,
+      },
+    });
+    return result;
+  }
 }
 
 

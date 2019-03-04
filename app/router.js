@@ -16,5 +16,6 @@ module.exports = app => {
   app.router.post(PRRFIX + '/gamerole/racelist', jwt, app.controller.main.raceList);
   app.router.post(PRRFIX + '/gamerole/raceadd', jwt, app.controller.main.raceAdd);
   app.router.post(PRRFIX + '/gamerole/raceedit', jwt, app.controller.main.raceEdit);
+  app.router.post(PRRFIX + '/gamerole/racedel', jwt, app.controller.main.raceDel);
 };
 
