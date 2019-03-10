@@ -1,8 +1,15 @@
 'use strict';
 
 class MainService extends require('egg').Service {
-  async roleList(currentPage, pageSize) {
-    const result = await this.ctx.model.RaceInfo.findAndCountAll({
+
+/**
+ *获取带分页的列表数据
+ * @param {string} mothod: 所操作的模型名
+ */
+
+  async getList(mothod) {
+    const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
+    const result = await this.ctx.model[mothod].findAndCountAll({
       offset: (currentPage - 1) * pageSize,
       limit: pageSize,
     });
@@ -10,15 +17,20 @@ class MainService extends require('egg').Service {
     const pagination = { total: result.count, current: currentPage, pageSize };
     return { list, pagination };
   }
-  async roleAdd(raceName) {
-    const result = await this.ctx.model.RaceInfo.findOrCreate({
-      where: { race_name: raceName },
+
+  /**
+  *获取带分页的列表数据
+  * @param {object} params: where 条件
+  * @param {stroong} modelName 所操作的模型名
+  */
+
+  async addItem(modelName, params) {
+    const result = await this.ctx.model[modelName].findOrCreate({
+      where: params,
     });
-    // if (result[1]) {
-    //   return result[0];
-    // }
     return result;
   }
+
   async raceEdit(id, raceName) {
     const result = await this.ctx.model.RaceInfo.update({
       race_name: raceName,
@@ -34,6 +46,18 @@ class MainService extends require('egg').Service {
       },
     });
     return result;
+  }
+
+  async talentList() {
+    const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
+    const result = await this.ctx.model.TalentInfo.findAndCountAll({
+      offset: (currentPage - 1) * pageSize,
+      limit: pageSize,
+      include: { model: this.ctx.model.ProfessionInfo, as: 'profession' },
+    });
+    const list = result.rows;
+    const pagination = { total: result.count, current: currentPage, pageSize };
+    return { list, pagination };
   }
 }
 

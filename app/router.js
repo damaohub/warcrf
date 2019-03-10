@@ -9,13 +9,18 @@ module.exports = app => {
   router.get('/', controller.home.index);
 
   // api
-  app.router.post(PRRFIX + '/login/login', app.controller.login.login);
+  app.router.post(PRRFIX + '/login/login', controller.login.login);
 
-  app.router.post(PRRFIX + '/user/userinfo', jwt, app.controller.user.userinfo);
+  app.router.post(PRRFIX + '/user/userinfo', jwt, controller.user.userinfo);
 
-  app.router.post(PRRFIX + '/gamerole/racelist', jwt, app.controller.main.raceList);
-  app.router.post(PRRFIX + '/gamerole/raceadd', jwt, app.controller.main.raceAdd);
-  app.router.post(PRRFIX + '/gamerole/raceedit', jwt, app.controller.main.raceEdit);
-  app.router.post(PRRFIX + '/gamerole/racedel', jwt, app.controller.main.raceDel);
+  app.router.post(PRRFIX + '/gamerole/racelist', jwt, controller.main.raceList);
+  app.router.post(PRRFIX + '/gamerole/raceadd', jwt, controller.main.raceAdd);
+  app.router.post(PRRFIX + '/gamerole/raceedit', jwt, controller.main.raceEdit);
+  app.router.post(PRRFIX + '/gamerole/racedel', jwt, controller.main.raceDel);
+  app.router.post(PRRFIX + '/gamerole/professionlist', jwt, controller.main.professionList);
+  app.router.post(PRRFIX + '/gamerole/professionadd', jwt, controller.main.professionAdd);
+  app.router.post(PRRFIX + '/gamerole/talentlist', jwt, controller.main.talentList);
+
+  app.router.post(PRRFIX + '/gamer/index', jwt, controller.main.gamerIndex);
 };
 
