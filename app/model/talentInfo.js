@@ -13,7 +13,7 @@ module.exports = app => {
     freezeTableName: true,
   });
   TalentInfo.associate = () => {
-    TalentInfo.blongsTo(app.model.ProfessionInfo, { foreignKey: 'profession_id' });
+    TalentInfo.belongsTo(app.model.ProfessionInfo, { as: 'profession', foreignKey: 'profession_id' });
   };
   return TalentInfo;
 };

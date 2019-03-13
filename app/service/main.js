@@ -55,9 +55,11 @@ class MainService extends require('egg').Service {
       limit: pageSize,
       include: { model: this.ctx.model.ProfessionInfo, as: 'profession' },
     });
-    const list = result.rows;
-    const pagination = { total: result.count, current: currentPage, pageSize };
-    return { list, pagination };
+    console.log(result.rows);
+    // const { prefession: { profession_name, profession_img }, id, talent_name } = rows;
+    // const list = { id, talent_name, profession_name, profession_img };
+    // const pagination = { total: result.count, current: currentPage, pageSize };
+    // return { list, pagination };
   }
 }
 
