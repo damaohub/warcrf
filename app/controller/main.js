@@ -18,7 +18,7 @@ class MainController extends Controller {
   }
   async raceEdit() {
     const { id, race_name } = this.ctx.request.body;
-    const data1 = await this.ctx.service.main.raceEdit(id, race_name);
+    const data1 = await this.ctx.service.main.editItem('RaceInfo', id, { race_name });
     if (data1[0]) {
       this.ctx.body = { ret: 0, data: { id, race_name }, msg: '修改成功！' };
     } else {
@@ -27,13 +27,14 @@ class MainController extends Controller {
   }
   async raceDel() {
     const { id } = this.ctx.request.body;
-    const result = await this.ctx.service.main.raceDel(id);
+    const result = await this.ctx.service.main.delItem('RaceInfo', id);
     if (result) { // 返回 1 删除成功, 0 失败
       this.ctx.body = { ret: 0, data: { id }, msg: '已经删除！' };
     } else {
       this.ctx.body = { ret: 1002, msg: '删除失败' };
     }
   }
+
   // profession
   async professionList() {
     const data = await this.ctx.service.main.getList('ProfessionInfo');
@@ -48,11 +49,28 @@ class MainController extends Controller {
       this.ctx.body = { ret: 3002, data: data[0], msg: `您输入的种族“${data[0].profession_name}”已存在` };
     }
   }
+  async professionEdit() {
+    const { id, profession_name, profession_img } = this.ctx.request.body;
+    const data1 = await this.ctx.service.main.editItem('ProfessionInfo', id, { profession_name, profession_img });
+    if (data1[0]) {
+      this.ctx.body = { ret: 0, data: { id, profession_name, profession_img }, msg: '修改成功！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '更新失败' };
+    }
+  }
+  async professionDel() {
+    const { cid } = this.ctx.request.body;
+    const result = await this.ctx.service.main.delItem('ProfessionInfo', cid);
+    if (result) { // 返回 1 删除成功, 0 失败
+      this.ctx.body = { ret: 0, data: { id: cid }, msg: '已经删除！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '删除失败' };
+    }
+  }
 
   // talent
   async talentList() {
     const data = await this.ctx.service.main.talentList();
-    // const data = await this.ctx.service.main.getList('TalentInfo');
     this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
   async talentAdd() {
@@ -61,8 +79,30 @@ class MainController extends Controller {
     if (data[1]) {
       this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
     } else {
-      this.ctx.body = { ret: 3002, data: data[0], msg: `您输入的种族“${data[0].race_name}”已存在` };
+      this.ctx.body = { ret: 3002, data: data[0], msg: '您新增的数据已存在' };
     }
+  }
+  async talentEdit() {
+    const { id, profession_id, talent_name } = this.ctx.request.body;
+    const data1 = await this.ctx.service.main.editItem('TalentInfo', id, { talent_name, profession_id });
+    if (data1[0]) {
+      this.ctx.body = { ret: 0, data: { id, talent_name, profession_id }, msg: '修改成功！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '更新失败' };
+    }
+  }
+  async talentDel() {
+    const { id } = this.ctx.request.body;
+    const result = await this.ctx.service.main.delItem('TalentInfo', id);
+    if (result) { // 返回 1 删除成功, 0 失败
+      this.ctx.body = { ret: 0, data: { id }, msg: '已经删除！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '删除失败' };
+    }
+  }
+  async monsterList() {
+    const data = await this.ctx.service.main.monsterList();
+    this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
 
   // gamer
