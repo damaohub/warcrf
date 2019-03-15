@@ -3,13 +3,28 @@
 class MainService extends require('egg').Service {
 
 /**
- *获取带分页的列表数据
- * @param {string} mothod: 所操作的模型名
+ * 获取列表(选填过滤条件、属性)
+ * @param {string} modelName 所操作的模型名
+ * @param {object} filter 过滤条件 默认null
+ * @param {Array} filter 属性，默认null
  */
 
-  async getList(mothod) {
+  async list(modelName, filter = null, attributes = null) {
+    const result = await this.ctx.model[modelName].findAll({
+      where: filter,
+      attributes,
+    });
+    return result;
+  }
+
+  /**
+   *获取带分页的列表数据
+  * @param {string} modelName: 所操作的模型名
+  */
+
+  async getList(modelName) {
     const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
-    const result = await this.ctx.model[mothod].findAndCountAll({
+    const result = await this.ctx.model[modelName].findAndCountAll({
       offset: (currentPage - 1) * pageSize,
       limit: pageSize,
     });
@@ -17,6 +32,7 @@ class MainService extends require('egg').Service {
     const pagination = { total: result.count, current: currentPage, pageSize };
     return { list, pagination };
   }
+
 
   /**
   *增加新数据，findOrCreate returns an array containing the object that was found or created and a boolean that
@@ -67,6 +83,21 @@ class MainService extends require('egg').Service {
       offset: (currentPage - 1) * pageSize,
       limit: pageSize,
       include: { model: this.ctx.model.ProfessionInfo, as: 'profession', attributes: [ ] },
+      raw: true,
+    });
+    const list = result.rows;
+    const pagination = { total: result.count, current: currentPage, pageSize };
+    return { list, pagination };
+  }
+
+  // 关联自己
+  async monsterList() {
+    const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
+    const result = await this.ctx.model.MonsterInfo.findAndCountAll({
+      attributes: [ 'id', 'name', 'instance_or_monster', 'instance_id', 'instance_type', 'sort', [ this.ctx.model.col('instance.name'), 'instance_name' ]],
+      offset: (currentPage - 1) * pageSize,
+      limit: pageSize,
+      include: { model: this.ctx.model.MonsterInfo, as: 'instance', attributes: [ ] },
       raw: true,
     });
     const list = result.rows;

@@ -100,9 +100,23 @@ class MainController extends Controller {
       this.ctx.body = { ret: 1002, msg: '删除失败' };
     }
   }
+  // monster
   async monsterList() {
     const data = await this.ctx.service.main.monsterList();
     this.ctx.body = { ret: 0, data, msg: 'ok' };
+  }
+  async instanceList() {
+    const list = await this.ctx.service.main.list('MonsterInfo', { instance_or_monster: 0 }, [ 'id', 'name' ]);
+    this.ctx.body = { ret: 0, data: { list }, msg: 'ok' };
+  }
+  async monsterAdd() {
+    const { profession_id, talent_name, sort } = this.ctx.request.body;
+    const data = await this.ctx.service.main.addItem('MonsterInfo', { profession_id, talent_name, sort });
+    if (data[1]) {
+      this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
+    } else {
+      this.ctx.body = { ret: 3002, data: data[0], msg: '您新增的数据已存在' };
+    }
   }
 
   // gamer

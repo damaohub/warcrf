@@ -30,6 +30,8 @@ module.exports = app => {
   app.router.post(PRRFIX + '/gamerole/talentdel', jwt, controller.main.talentDel);
 
   app.router.post(PRRFIX + '/monster/list', jwt, controller.main.monsterList);
+  app.router.post(PRRFIX + '/monster/instancelist', jwt, controller.main.instanceList);
+  app.router.post(PRRFIX + '/monster/add', jwt, controller.main.monsterAdd);
 
 
   app.router.post(PRRFIX + '/gamer/index', jwt, controller.main.gamerIndex);

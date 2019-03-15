@@ -8,9 +8,13 @@ module.exports = app => {
     instance_or_monster: BOOLEAN,
     instance_id: INTEGER,
     instance_type: BOOLEAN,
+    sort: INTEGER,
   }, {
     timestamps: false,
     freezeTableName: true,
   });
+  MonsterInfo.associate = () => {
+    MonsterInfo.belongsTo(MonsterInfo, { as: 'instance', foreignKey: 'instance_id', targetKey: 'instance_id' });
+  };
   return MonsterInfo;
 };
