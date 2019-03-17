@@ -106,16 +106,34 @@ class MainController extends Controller {
     this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
   async instanceList() {
-    const list = await this.ctx.service.main.list('MonsterInfo', { instance_or_monster: 0 }, [ 'id', 'name' ]);
+    const list = await this.ctx.service.main.list('MonsterInfo', { instance_or_monster: 0 }, [ 'id', 'name', 'instance_type' ]);
     this.ctx.body = { ret: 0, data: { list }, msg: 'ok' };
   }
   async monsterAdd() {
-    const { profession_id, talent_name, sort } = this.ctx.request.body;
-    const data = await this.ctx.service.main.addItem('MonsterInfo', { profession_id, talent_name, sort });
+    const { name, instance_id, instance_or_monster, instance_type, sort } = this.ctx.request.body;
+    const data = await this.ctx.service.main.addItem('MonsterInfo', { name, instance_id, instance_or_monster, instance_type, sort });
     if (data[1]) {
       this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
     } else {
       this.ctx.body = { ret: 3002, data: data[0], msg: '您新增的数据已存在' };
+    }
+  }
+  async monsterEdit() {
+    const { id, name, instance_or_monster, instance_id, instance_name, instance_type, sort } = this.ctx.request.body;
+    const data1 = await this.ctx.service.main.editItem('MonsterInfo', id, { name, instance_or_monster, instance_id, instance_name, instance_type, sort });
+    if (data1[0]) {
+      this.ctx.body = { ret: 0, data: { id, name, instance_name, sort }, msg: '修改成功！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '更新失败' };
+    }
+  }
+  async monsterDel() {
+    const { id } = this.ctx.request.body;
+    const result = await this.ctx.service.main.delItem('MonsterInfo', id);
+    if (result) { // 返回 1 删除成功, 0 失败
+      this.ctx.body = { ret: 0, data: { id }, msg: '已经删除！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '删除失败' };
     }
   }
 

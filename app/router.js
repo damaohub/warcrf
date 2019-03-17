@@ -32,7 +32,8 @@ module.exports = app => {
   app.router.post(PRRFIX + '/monster/list', jwt, controller.main.monsterList);
   app.router.post(PRRFIX + '/monster/instancelist', jwt, controller.main.instanceList);
   app.router.post(PRRFIX + '/monster/add', jwt, controller.main.monsterAdd);
-
+  app.router.post(PRRFIX + '/monster/edit', jwt, controller.main.monsterEdit);
+  app.router.post(PRRFIX + '/monster/del', jwt, controller.main.monsterDel);
 
   app.router.post(PRRFIX + '/gamer/index', jwt, controller.main.gamerIndex);
 };
