@@ -34,6 +34,11 @@ module.exports = app => {
   app.router.post(PRRFIX + '/monster/add', jwt, controller.main.monsterAdd);
   app.router.post(PRRFIX + '/monster/edit', jwt, controller.main.monsterEdit);
   app.router.post(PRRFIX + '/monster/del', jwt, controller.main.monsterDel);
+  app.router.post(PRRFIX + '/monster/searchlist', jwt, controller.main.monsterSearch);
+
+  app.router.post(PRRFIX + '/equip/locationtypelist', jwt, controller.main.locationTypeList);
+  app.router.post(PRRFIX + '/equip/list', jwt, controller.main.equipList);
+  app.router.post(PRRFIX + '/equip/add', jwt, controller.main.equipAdd);
 
   app.router.post(PRRFIX + '/gamer/index', jwt, controller.main.gamerIndex);
 };

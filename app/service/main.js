@@ -2,6 +2,7 @@
 
 class MainService extends require('egg').Service {
 
+
 /**
  * 获取列表(选填过滤条件、属性)
  * @param {string} modelName 所操作的模型名
@@ -27,6 +28,7 @@ class MainService extends require('egg').Service {
     const result = await this.ctx.model[modelName].findAndCountAll({
       offset: (currentPage - 1) * pageSize,
       limit: pageSize,
+      raw: true,
     });
     const list = result.rows;
     const pagination = { total: result.count, current: currentPage, pageSize };
@@ -103,6 +105,17 @@ class MainService extends require('egg').Service {
     const list = result.rows;
     const pagination = { total: result.count, current: currentPage, pageSize };
     return { list, pagination };
+  }
+
+  async monsterSearch(value) {
+    const result = await this.ctx.model.MonsterInfo.findAll({
+      where: {
+        name: {
+          [this.ctx.model.Op.like]: `%${value}%`,
+        },
+      },
+    });
+    return result;
   }
 
 }

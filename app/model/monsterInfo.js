@@ -7,7 +7,7 @@ module.exports = app => {
     name: STRING(100),
     instance_or_monster: BOOLEAN,
     instance_id: INTEGER,
-    instance_type: INTEGER(1),
+    instance_type: STRING,
     sort: INTEGER,
   }, {
     timestamps: false,

@@ -136,6 +136,67 @@ class MainController extends Controller {
       this.ctx.body = { ret: 1002, msg: '删除失败' };
     }
   }
+  async monsterSearch() {
+    const { searchValue } = this.ctx.request.body;
+    const result = await this.ctx.service.main.monsterSearch(searchValue);
+    this.ctx.body = { ret: 0, data: { list: result }, msg: 'ok' };
+  }
+
+  // equip
+  async locationTypeList() {
+    const equipLocation = [
+      { id: 'tou', name: '头盔' },
+      { id: 'lian', name: '项链' },
+      { id:	'jian', name:	'肩膀' },
+      { id: 'chen', name: '衬衣' },
+      { id: 'xiong', name: '胸甲' },
+      { id: 'yao', name: '腰带' },
+      { id: 'tui', name: '腿部' },
+      { id: 'xie', name: '鞋子' },
+      { id: 'wan', name: '手腕' },
+      { id: 'shou', name: '手套' },
+      { id: 'zhi', name: '戒指' },
+      { id: 'shi', name: '饰品' },
+      { id: 'pi', name: '披风' },
+      { id: 'pao', name: '战袍' },
+      { id: 'wuqi', name: '武器' },
+    ];
+    const equipType = [
+      { id: 'suo', name: '锁甲' },
+      { id: 'ban', name: '板甲' },
+      { id: 'pi', name: '皮甲' },
+      { id: 'bu', name: '布甲' },
+    ];
+    const needType = [
+      { id: 'tou', name: '头盔' },
+      { id: 'jian', name: '肩膀' },
+      { id: 'xiong', name: '胸甲' },
+      { id: 'yao', name: '腰带' },
+      { id: 'tui', name: '腿部' },
+      { id: 'xie', name: '鞋子' },
+      { id: 'wan', name: '手腕' },
+      { id: 'shou', name: '手套' },
+    ];
+    const data = { equipLocation, equipType, needType };
+    this.ctx.body = { ret: 0, data, msg: 'ok' };
+  }
+  async equipList() {
+    const data = await this.ctx.service.main.getList('EquipInfo');
+    const ids = data.talent_ids
+    const talents = await this.ctx.service.list('TalentInfo', {id: ids })
+    this.ctx.body = { ret: 0, data, msg: 'ok' };
+  }
+  async equipAdd() {
+    const { equip_name, equip_location, equip_type, talent_ids, monster_id } = this.ctx.request.body;
+    const talentIds = talent_ids.join(',');
+    const data = await this.ctx.service.main.addItem('EquipInfo', { equip_name, equip_location, equip_type, talent_ids: `,${talentIds},`, monster_id });
+    if (data[1]) {
+      this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
+    } else {
+      this.ctx.body = { ret: 3002, data: data[0], msg: '您新增的数据已存在' };
+    }
+  }
+
 
   // gamer
   async gamerIndex() {
