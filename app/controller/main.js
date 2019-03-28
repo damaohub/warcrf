@@ -181,20 +181,55 @@ class MainController extends Controller {
     this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
   async equipList() {
-    const data = await this.ctx.service.main.getList('EquipInfo');
-    const ids = data.talent_ids
-    const talents = await this.ctx.service.list('TalentInfo', {id: ids })
+    const data = await this.ctx.service.main.equipList();
+    const talentsData = await this.ctx.service.main.list('TalentInfo');
+    const talentsMap = {};
+    talentsData.map(item => (
+      talentsMap[item.id] = item.talent_name
+    ));
+    data.list.map(item => {
+      const ids = item.talent_ids.split(',');
+      ids.shift();
+      ids.pop();
+      const talents = [];
+      ids.map(id => talents.push(talentsMap[id]));
+      item.talents = talents;
+      return item;
+    });
     this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
   async equipAdd() {
     const { equip_name, equip_location, equip_type, talent_ids, monster_id } = this.ctx.request.body;
-    const talentIds = talent_ids.join(',');
-    const data = await this.ctx.service.main.addItem('EquipInfo', { equip_name, equip_location, equip_type, talent_ids: `,${talentIds},`, monster_id });
+    // const talentIds = talent_ids.join(',');
+    const data = await this.ctx.service.main.addItem('EquipInfo', { equip_name, equip_location, equip_type, talent_ids, monster_id });
     if (data[1]) {
       this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
     } else {
       this.ctx.body = { ret: 3002, data: data[0], msg: '您新增的数据已存在' };
     }
+  }
+  async equipEdit() {
+    const { id, equip_location, equip_name, equip_type, monster_id, talent_ids } = this.ctx.request.body;
+    const data1 = await this.ctx.service.main.editItem('EquipInfo', id, { id, equip_location, equip_name, equip_type, monster_id, talent_ids });
+    if (data1[0]) {
+      this.ctx.body = { ret: 0, data: { id, equip_location, equip_name, equip_type, monster_id, talent_ids }, msg: '修改成功！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '更新失败' };
+    }
+  }
+  async equipDel() {
+    const { id } = this.ctx.request.body;
+    const result = await this.ctx.service.main.delItem('EquipInfo', id);
+    if (result) { // 返回 1 删除成功, 0 失败
+      this.ctx.body = { ret: 0, data: { id }, msg: '已经删除！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '删除失败' };
+    }
+  }
+
+  async ruleList() {
+    const list = await this.ctx.service.main.list('RuleInfo');
+    this.ctx.body = { ret: 0, data: { list }, msg: 'ok' };
   }
 
 

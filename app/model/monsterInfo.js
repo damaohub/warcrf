@@ -15,6 +15,7 @@ module.exports = app => {
   });
   MonsterInfo.associate = () => {
     MonsterInfo.belongsTo(MonsterInfo, { as: 'instance', foreignKey: 'instance_id', targetKey: 'id' });
+    // MonsterInfo.hasOne(app.model.EquipInfo, { foreignKey: 'monster_id' });
   };
   return MonsterInfo;
 };

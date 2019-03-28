@@ -2,13 +2,28 @@
 
 class MainService extends require('egg').Service {
 
+  /**
+   * 标准化数据，使参数符合入库标准
+   * @param {Object} params
+   */
 
-/**
- * 获取列表(选填过滤条件、属性)
- * @param {string} modelName 所操作的模型名
- * @param {object} filter 过滤条件 默认null
- * @param {Array} filter 属性，默认null
- */
+  async normalizeData(params = {}) {
+    Object.keys(params).map(key => {
+      if (Array.isArray(params[key])) {
+        const tmpStr = params[key].join(',');
+        params[key] = `,${tmpStr},`;
+      }
+      return key;
+    });
+    return params;
+  }
+
+  /**
+   * 获取列表(选填过滤条件、属性)
+   * @param {string} modelName 所操作的模型名
+   * @param {object} filter 过滤条件 默认null
+   * @param {Array} filter 属性，默认null
+   */
 
   async list(modelName, filter = null, attributes = null) {
     const result = await this.ctx.model[modelName].findAll({
@@ -44,8 +59,9 @@ class MainService extends require('egg').Service {
   */
 
   async addItem(modelName, params) {
+    const normalizeParams = await this.normalizeData(params);
     const result = await this.ctx.model[modelName].findOrCreate({
-      where: params,
+      where: normalizeParams,
     });
     return result;
   }
@@ -58,7 +74,8 @@ class MainService extends require('egg').Service {
    */
 
   async editItem(modelName, id, params) {
-    const result = await this.ctx.model[modelName].update(params, {
+    const normalizeParams = await this.normalizeData(params);
+    const result = await this.ctx.model[modelName].update(normalizeParams, {
       where: { id },
     });
     return result;
@@ -107,6 +124,7 @@ class MainService extends require('egg').Service {
     return { list, pagination };
   }
 
+  // 远程搜索，模糊查询
   async monsterSearch(value) {
     const result = await this.ctx.model.MonsterInfo.findAll({
       where: {
@@ -116,6 +134,20 @@ class MainService extends require('egg').Service {
       },
     });
     return result;
+  }
+
+  async equipList() {
+    const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
+    const result = await this.ctx.model.EquipInfo.findAndCountAll({
+      attributes: [ 'id', 'equip_name', 'equip_type', 'equip_location', 'talent_ids', 'monster_id', [ this.ctx.model.col('monster.name'), 'monster_name' ]],
+      offset: (currentPage - 1) * pageSize,
+      limit: pageSize,
+      include: { model: this.ctx.model.MonsterInfo, as: 'monster', attributes: [ ] },
+      raw: true,
+    });
+    const list = result.rows;
+    const pagination = { total: result.count, current: currentPage, pageSize };
+    return { list, pagination };
   }
 
 }

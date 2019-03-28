@@ -13,6 +13,9 @@ module.exports = app => {
     timestamps: false,
     freezeTableName: true,
   });
+  EquipInfo.associate = () => {
+    EquipInfo.belongsTo(app.model.MonsterInfo, { foreignKey: 'monster_id', as: 'monster' });
+  };
 
   return EquipInfo;
 };
