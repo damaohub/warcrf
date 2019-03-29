@@ -22,4 +22,36 @@ module.exports = {
     }
     return res;
   },
+  // 树形结构
+  listToTree(data, options) {
+    options = options || {};
+    const ID_KEY = options.idKey || 'id';
+    const PARENT_KEY = options.parentKey || 'parent';
+    const CHILDREN_KEY = options.childrenKey || 'children';
+
+    const tree = [],
+      childrenOf = {};
+    let item,
+      id,
+      parentId;
+
+    for (let i = 0, length = data.length; i < length; i++) {
+      item = data[i];
+      id = item[ID_KEY];
+      parentId = item[PARENT_KEY] || 0;
+      // 每个元素都可能有自己的子元素
+      childrenOf[id] = childrenOf[id] || [];
+      // 初始化子元素
+      item[CHILDREN_KEY] = childrenOf[id];
+      if (parentId !== 0) {
+        // init its parent's children object
+        childrenOf[parentId] = childrenOf[parentId] || [];
+        // push it into its parent's children object
+        childrenOf[parentId].push(item);
+      } else {
+        tree.push(item);
+      }
+    }
+    return tree;
+  },
 };

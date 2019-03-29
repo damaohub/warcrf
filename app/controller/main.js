@@ -228,7 +228,8 @@ class MainController extends Controller {
   }
 
   async ruleList() {
-    const list = await this.ctx.service.main.list('RuleInfo');
+    const sourceList = await this.ctx.service.main.list('RuleInfo');
+    const list = this.ctx.helper.listToTree(sourceList, { parentKey: 'pid' });
     this.ctx.body = { ret: 0, data: { list }, msg: 'ok' };
   }
 

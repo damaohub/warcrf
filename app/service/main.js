@@ -29,6 +29,7 @@ class MainService extends require('egg').Service {
     const result = await this.ctx.model[modelName].findAll({
       where: filter,
       attributes,
+      raw: true,
     });
     return result;
   }
