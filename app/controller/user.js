@@ -16,5 +16,9 @@ class UserController extends Controller {
     const data = Object.assign(plainData, detail, role);
     ctx.body = { ret: 0, data, msg: 'ok' };
   }
+  async userList() {
+    const data = await this.ctx.service.main.getList('UserData');
+    this.ctx.body = { ret: 0, data, msg: 'ok' };
+  }
 }
 module.exports = UserController;

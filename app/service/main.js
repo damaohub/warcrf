@@ -5,13 +5,14 @@ class MainService extends require('egg').Service {
   /**
    * 标准化数据，使参数符合入库标准
    * @param {Object} params
+   * @param {Boolean} isComon 是否前后带逗号
    */
 
-  async normalizeData(params = {}) {
+  async normalizeData(params = {}, isComon = false) {
     Object.keys(params).map(key => {
       if (Array.isArray(params[key])) {
         const tmpStr = params[key].join(',');
-        params[key] = `,${tmpStr},`;
+        params[key] = isComon ? tmpStr : `,${tmpStr},`;
       }
       return key;
     });
@@ -137,7 +138,7 @@ class MainService extends require('egg').Service {
     return result;
   }
 
-  async equipList() {
+  async equipList() { // 获取副本还么实现
     const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
     const result = await this.ctx.model.EquipInfo.findAndCountAll({
       attributes: [ 'id', 'equip_name', 'equip_type', 'equip_location', 'talent_ids', 'monster_id', [ this.ctx.model.col('monster.name'), 'monster_name' ]],
