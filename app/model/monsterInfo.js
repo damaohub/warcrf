@@ -9,9 +9,6 @@ module.exports = app => {
     instance_id: INTEGER,
     instance_type: STRING,
     sort: INTEGER,
-  }, {
-    timestamps: false,
-    freezeTableName: true,
   });
   MonsterInfo.associate = () => {
     MonsterInfo.belongsTo(MonsterInfo, { as: 'instance', foreignKey: 'instance_id', targetKey: 'id' });

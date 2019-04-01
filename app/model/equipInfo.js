@@ -9,9 +9,6 @@ module.exports = app => {
     equip_location: STRING(10),
     talent_ids: STRING(10),
     monster_id: STRING(10),
-  }, {
-    timestamps: false,
-    freezeTableName: true,
   });
   EquipInfo.associate = () => {
     EquipInfo.belongsTo(app.model.MonsterInfo, { foreignKey: 'monster_id', as: 'monster' });

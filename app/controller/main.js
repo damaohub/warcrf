@@ -201,7 +201,7 @@ class MainController extends Controller {
   async equipAdd() {
     const { equip_name, equip_location, equip_type, talent_ids, monster_id } = this.ctx.request.body;
     // const talentIds = talent_ids.join(',');
-    const data = await this.ctx.service.main.addItem('EquipInfo', { equip_name, equip_location, equip_type, talent_ids, monster_id });
+    const data = await this.ctx.service.main.addItem('EquipInfo', { equip_name, equip_location, equip_type, talent_ids, monster_id }, true);
     if (data[1]) {
       this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
     } else {
@@ -210,7 +210,7 @@ class MainController extends Controller {
   }
   async equipEdit() {
     const { id, equip_location, equip_name, equip_type, monster_id, talent_ids } = this.ctx.request.body;
-    const data1 = await this.ctx.service.main.editItem('EquipInfo', id, { id, equip_location, equip_name, equip_type, monster_id, talent_ids });
+    const data1 = await this.ctx.service.main.editItem('EquipInfo', id, { id, equip_location, equip_name, equip_type, monster_id, talent_ids }, true);
     if (data1[0]) {
       this.ctx.body = { ret: 0, data: { id, equip_location, equip_name, equip_type, monster_id, talent_ids }, msg: '修改成功！' };
     } else {
@@ -289,6 +289,15 @@ class MainController extends Controller {
       this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
     } else {
       this.ctx.body = { ret: 3002, data: data[0], msg: '您新增的数据已存在' };
+    }
+  }
+  async roleEditRule() {
+    const { id, role_rule } = this.ctx.request.body;
+    const data1 = await this.ctx.service.main.editItem('RoleInfo', id, { id, role_rule });
+    if (data1[0]) {
+      this.ctx.body = { ret: 0, data: { id, role_rule }, msg: '修改成功！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '更新失败' };
     }
   }
   // gamer

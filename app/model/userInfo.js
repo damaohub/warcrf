@@ -1,5 +1,4 @@
 'use strict';
-
 module.exports = app => {
   const { STRING, INTEGER, DATE, TEXT } = app.Sequelize;
   const UserInfo = app.model.define('user_info', {
@@ -10,9 +9,6 @@ module.exports = app => {
     status: TEXT('tiny'),
     login_token: STRING,
     last_login_time: DATE,
-  }, {
-    timestamps: false,
-    freezeTableName: true,
   });
   UserInfo.associate = function() {
     UserInfo.hasOne(app.model.UserData, { as: 'detail', foreignKey: 'uid' });

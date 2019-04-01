@@ -7,9 +7,6 @@ module.exports = app => {
     role_name: STRING(100),
     role_rule: STRING(255),
     role_description: TEXT,
-  }, {
-    timestamps: false,
-    freezeTableName: true,
   });
   RoleInfo.associate = function() {
     RoleInfo.hasMany(app.model.UserInfo, { foreignKey: 'role_id' });

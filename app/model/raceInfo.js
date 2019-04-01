@@ -5,9 +5,6 @@ module.exports = app => {
   const RaceInfo = app.model.define('race_info', {
     id: { type: INTEGER, primaryKey: true, autoIncrement: true },
     race_name: STRING(50),
-  }, {
-    timestamps: false,
-    freezeTableName: true,
   });
   return RaceInfo;
 };

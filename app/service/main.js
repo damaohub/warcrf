@@ -8,11 +8,11 @@ class MainService extends require('egg').Service {
    * @param {Boolean} isComon 是否前后带逗号
    */
 
-  async normalizeData(params = {}, isComon = false) {
+  async normalizeData(params = {}, isComon) {
     Object.keys(params).map(key => {
       if (Array.isArray(params[key])) {
         const tmpStr = params[key].join(',');
-        params[key] = isComon ? tmpStr : `,${tmpStr},`;
+        params[key] = isComon ? `,${tmpStr},` : tmpStr;
       }
       return key;
     });
@@ -56,14 +56,24 @@ class MainService extends require('egg').Service {
   /**
   *增加新数据，findOrCreate returns an array containing the object that was found or created and a boolean that
      will be true if a new object was created and false if not
-  * @param {object} params: where 条件
+  * @param {object} params: where 条件,sqlunique123字段检测是否已存在字段，必须是该对象已存在字段名
   * @param {string} modelName 所操作的模型名
   */
 
-  async addItem(modelName, params) {
-    const normalizeParams = await this.normalizeData(params);
+  async addItem(modelName, params, isComon = false) {
+    const special = {};
+    if (Object.keys(params).length === 1) { // 如果增加一个字段，这个做重复检测
+      // eslint-disable-next-line no-const-assign
+      special = params;
+    } else if (params.hasOwnProperty('sqlunique123')) {
+      const param = params.sqlunique123;
+      special[param] = params[param];
+      delete params.sqlunique123;
+    }
+    const normalizeParams = await this.normalizeData(params, isComon);
     const result = await this.ctx.model[modelName].findOrCreate({
-      where: normalizeParams,
+      where: Object.keys(special).length === 0 ? null : special,
+      defaults: Object.keys(params).length === 1 ? null : normalizeParams,
     });
     return result;
   }
@@ -75,8 +85,8 @@ class MainService extends require('egg').Service {
    * @param {object} params 修改的字段
    */
 
-  async editItem(modelName, id, params) {
-    const normalizeParams = await this.normalizeData(params);
+  async editItem(modelName, id, params, isComon = false) {
+    const normalizeParams = await this.normalizeData(params, isComon);
     const result = await this.ctx.model[modelName].update(normalizeParams, {
       where: { id },
     });

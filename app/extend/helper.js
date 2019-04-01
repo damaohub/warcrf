@@ -44,9 +44,9 @@ module.exports = {
       // 初始化子元素
       item[CHILDREN_KEY] = childrenOf[id];
       if (parentId !== 0) {
-        // init its parent's children object
+        // 初始化子元素
         childrenOf[parentId] = childrenOf[parentId] || [];
-        // push it into its parent's children object
+        // 子元素进栈
         childrenOf[parentId].push(item);
       } else {
         tree.push(item);

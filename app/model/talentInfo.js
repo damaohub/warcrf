@@ -8,9 +8,6 @@ module.exports = app => {
     talent_name: { type: STRING(50), unique: true },
     battle_site: CHAR(1),
     close_or_far: CHAR(1),
-  }, {
-    timestamps: false,
-    freezeTableName: true,
   });
   TalentInfo.associate = () => {
     TalentInfo.belongsTo(app.model.ProfessionInfo, { as: 'profession', foreignKey: 'profession_id' });

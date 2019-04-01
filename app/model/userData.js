@@ -1,5 +1,4 @@
 'use strict';
-
 module.exports = app => {
   const { STRING, INTEGER, DATE, TEXT, DECIMAL } = app.Sequelize;
 
@@ -15,12 +14,9 @@ module.exports = app => {
     qq: STRING(15),
     entry_time: DATE,
     leave_time: DATE,
-  }, {
-    timestamps: false,
-    freezeTableName: true,
   });
   UserData.associate = function() {
-    UserData.belongsTo(app.model.UserInfo, { foreignKey: 'uid' });
+    UserData.belongsTo(app.model.UserInfo, { as: 'info', foreignKey: 'uid' });
   };
   return UserData;
 };

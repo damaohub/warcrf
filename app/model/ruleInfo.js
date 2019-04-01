@@ -9,9 +9,6 @@ module.exports = app => {
     pid: INTEGER,
     sort: INTEGER,
     is_api: STRING(1),
-  }, {
-    timestamps: false,
-    freezeTableName: true,
   });
   return RuleInfo;
 };

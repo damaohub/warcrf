@@ -18,10 +18,55 @@ class UserService extends require('egg').Service {
   }
   async dataById(id) {
     const user = await this.ctx.model.UserInfo.findOne({
+      attributes: [
+        'id',
+        'last_login_time',
+        'username',
+        'status',
+        'role_id',
+        this.ctx.model.col('detail.basic_salary'),
+        this.ctx.model.col('detail.card_img_behind'),
+        this.ctx.model.col('detail.card_img_front'),
+        this.ctx.model.col('detail.entry_time'),
+        this.ctx.model.col('detail.id_card'),
+        this.ctx.model.col('detail.real_name'),
+        this.ctx.model.col('detail.leave_time'),
+        this.ctx.model.col('detail.qq'),
+        this.ctx.model.col('role.role_name'),
+      ],
       where: { id },
-      include: [{ model: this.ctx.model.UserData, as: 'detail' }, { model: this.ctx.model.RoleInfo, as: 'role' }],
+      include: [{ model: this.ctx.model.UserData, as: 'detail', attributes: [ ] }, { model: this.ctx.model.RoleInfo, as: 'role', attributes: [ ] }],
+      raw: true,
     });
     return user;
+  }
+  async userList() {
+    const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
+    const result = await this.ctx.model.UserInfo.findAndCountAll({
+      attributes: [
+        'id',
+        'last_login_time',
+        'username',
+        'status',
+        'role_id',
+        this.ctx.model.col('detail.basic_salary'),
+        this.ctx.model.col('detail.card_img_behind'),
+        this.ctx.model.col('detail.card_img_front'),
+        this.ctx.model.col('detail.entry_time'),
+        this.ctx.model.col('detail.id_card'),
+        this.ctx.model.col('detail.real_name'),
+        this.ctx.model.col('detail.leave_time'),
+        this.ctx.model.col('detail.qq'),
+        this.ctx.model.col('role.role_name'),
+      ],
+      offset: (currentPage - 1) * pageSize,
+      limit: pageSize,
+      include: [{ model: this.ctx.model.UserData, as: 'detail', attributes: [ ] }, { model: this.ctx.model.RoleInfo, as: 'role', attributes: [ ] }],
+      raw: true,
+    });
+    const list = result.rows;
+    const pagination = { total: result.count, current: currentPage, pageSize };
+    return { list, pagination };
   }
 }
 
