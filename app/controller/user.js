@@ -1,11 +1,16 @@
 'use strict';
 const Controller = require('egg').Controller;
 class UserController extends Controller {
-  async userinfo() {
+  async userInfoByToken() {
     const { ctx } = this;
     const params = ctx.helper.verifyToken(ctx.request.body.token);
     const data = await ctx.service.user.dataById(params.id);
     ctx.body = { ret: 0, data, msg: 'ok' };
+  }
+  async userInfo() {
+    const { id } = this.ctx.request.body;
+    const data = await this.ctx.service.user.dataById(id);
+    this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
   async userList() {
     const data = await this.ctx.service.user.userList();

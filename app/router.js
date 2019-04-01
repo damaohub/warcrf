@@ -11,10 +11,11 @@ module.exports = app => {
   // api
   app.router.post(PRRFIX + '/login/login', controller.login.login);
 
-  app.router.post(PRRFIX + '/user/userinfo', jwt, controller.user.userinfo);
+  app.router.post(PRRFIX + '/user/userinfo', jwt, controller.user.userInfoByToken);
   app.router.post(PRRFIX + '/user/list', jwt, controller.user.userList);
   app.router.post(PRRFIX + '/user/add', jwt, controller.user.userAdd);
   app.router.post(PRRFIX + '/user/getaway', jwt, controller.user.userGetAway);
+  app.router.post(PRRFIX + '/user/info', jwt, controller.user.userInfo);
 
   app.router.post(PRRFIX + '/gamerole/racelist', jwt, controller.main.raceList);
   app.router.post(PRRFIX + '/gamerole/raceadd', jwt, controller.main.raceAdd);
