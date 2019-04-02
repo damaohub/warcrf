@@ -16,6 +16,8 @@ module.exports = app => {
   app.router.post(PRRFIX + '/user/add', jwt, controller.user.userAdd);
   app.router.post(PRRFIX + '/user/getaway', jwt, controller.user.userGetAway);
   app.router.post(PRRFIX + '/user/info', jwt, controller.user.userInfo);
+  app.router.post(PRRFIX + '/user/perfectdata', jwt, controller.user.perfectData);
+  app.router.post(PRRFIX + '/user/upload-cardimg', jwt, controller.user.uploadCardimg);
 
   app.router.post(PRRFIX + '/gamerole/racelist', jwt, controller.main.raceList);
   app.router.post(PRRFIX + '/gamerole/raceadd', jwt, controller.main.raceAdd);

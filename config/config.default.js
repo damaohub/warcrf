@@ -63,13 +63,9 @@ module.exports = appInfo => {
       useSession: true, // 默认为 false，当设置为 true 时，将会把 csrf token 保存到 Session 中
       cookieName: 'csrfToken', // Cookie 中的字段名，默认为 csrfToken
       sessionName: 'csrfToken', // Session 中的字段名，默认为 csrfToken
-      ignoreJSON: true, // 默认为 false，当设置为 true 时，将会放过所有 content-type 为 `application/json` 的请求
+      ignoreJSON: false, // 默认为 false，当设置为 true 时，将会放过所有 content-type 为 `application/json` 的请求
       // ignore: '/api',
     },
-  };
-  config.cors = {
-    origin: '*',
-    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
   };
   return config;
 };

@@ -1,4 +1,7 @@
 'use strict';
+const fs = require('fs');
+const path = require('path');
+const pump = require('pump');
 const Controller = require('egg').Controller;
 class UserController extends Controller {
   async userInfoByToken() {
@@ -33,6 +36,27 @@ class UserController extends Controller {
     } else {
       this.ctx.body = { ret: 1002, msg: '更新失败' };
     }
+  }
+  async perfectData() {
+    const { id, real_name, id_card, basic_salary, qq, entry_time, card_img_front, card_img_behind } = this.ctx.request.body;
+    const data1 = await this.ctx.service.main.editItem('UserData', id, { id, real_name, id_card, basic_salary, qq, entry_time, card_img_front, card_img_behind });
+    if (data1[0]) {
+      this.ctx.body = { ret: 0, data: { id }, msg: '已提交！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '更新失败' };
+    }
+  }
+  async uploadCardimg() {
+    const { ctx } = this;
+    // 获取 steam
+    const stream = await ctx.getFileStream();
+    // 生成文件名
+    const filename = Date.now() + '' + Number.parseInt(Math.random() * 10000) + path.extname(stream.filename);
+    // 写入路径
+    const target = path.join(this.config.baseDir, 'app/public/upload/', filename);
+    const writeStream = fs.createWriteStream(target);
+    await pump(stream, writeStream);
+    this.ctx.body = { ret: 0, data: { url: '/public/upload/' + filename }, msg: '上传完成' };
   }
 }
 module.exports = UserController;
