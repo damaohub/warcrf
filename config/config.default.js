@@ -33,14 +33,27 @@ module.exports = appInfo => {
   //   dialect: 'mysql',
   //   host: '127.0.0.1',
   //   port: 3306,
-  //   database: 'youlan',
+  //   database: '',
   //   user: 'root',
   //   password: '',
   //   // app: true,
   //   // agent: false,
+  //   raw: true,
   //   define: {
-  //     timestamp: false,
+  //     timestamps: false,
+  //     freezeTableName: true,
   //   },
+  //   dialectOptions: {
+  //     useUTC: false, // for reading from database
+  //     dateStrings: true,
+  //     typeCast: (field, next) => { // for reading from database
+  //       if (field.type === 'DATETIME') {
+  //         return field.string();
+  //       }
+  //       return next();
+  //     },
+  //   },
+  //   timezone: '+08:00', // 东八时区
   // };
 
   config.security = {
