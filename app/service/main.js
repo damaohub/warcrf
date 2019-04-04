@@ -62,19 +62,21 @@ class MainService extends require('egg').Service {
 
   async addItem(modelName, params, isComon = false) {
     const special = {};
-    if (Object.keys(params).length === 1) { // 如果增加一个字段，这个做重复检测
-      // eslint-disable-next-line no-const-assign
-      special = params;
-    } else if (params.hasOwnProperty('sqlunique123')) {
+    if (params.hasOwnProperty('sqlunique123')) {
       const param = params.sqlunique123;
       special[param] = params[param];
       delete params.sqlunique123;
+      delete params[param];
     }
+    const sql = {};
     const normalizeParams = await this.normalizeData(params, isComon);
-    const result = await this.ctx.model[modelName].findOrCreate({
-      where: Object.keys(special).length === 0 ? null : special,
-      defaults: Object.keys(params).length === 1 ? null : normalizeParams,
-    });
+    if (Object.keys(special).length !== 0) {
+      sql.where = special;
+      sql.defaults = normalizeParams;
+    } else {
+      sql.where = normalizeParams;
+    }
+    const result = await this.ctx.model[modelName].findOrCreate(sql);
     return result;
   }
 

@@ -8,7 +8,7 @@ class UserService extends require('egg').Service {
     return user;
   }
   async infoById(id) {
-    const user = await this.ctx.model.UserInfo.findById(id);
+    const user = await this.ctx.model.UserInfo.findOne({ where: { id }, raw: true });
     // const user = await this.ctx.db.query('select * from user_info where uid = ?', uid);
     return user;
   }
@@ -63,10 +63,48 @@ class UserService extends require('egg').Service {
       limit: pageSize,
       include: [{ model: this.ctx.model.UserData, as: 'detail', attributes: [ ] }, { model: this.ctx.model.RoleInfo, as: 'role', attributes: [ ] }],
       raw: true,
+      order: [[ 'status', 'DESC' ]],
     });
     const list = result.rows;
     const pagination = { total: result.count, current: currentPage, pageSize };
     return { list, pagination };
+  }
+  async salaryList() {
+    const { currentPage = 1, pageSize = 10, id } = this.ctx.request.body;
+    const result = await this.ctx.model.SalaryLog.findAndCountAll({
+      where: { uid: id },
+      attributes: [
+        'id',
+        'uid',
+        'type',
+        'money',
+        'reason',
+        'reason',
+        'exec_time',
+        [ this.ctx.model.col('user_info->detail.real_name'), 'exec_name' ], // 两层include语法为layer1->layer2.col
+        [ this.ctx.model.col('user_info->role.role_name'), 'exec_role' ],
+        [ this.ctx.model.col('user_info->role.id'), 'exec_id' ],
+      ],
+      offset: (currentPage - 1) * pageSize,
+      limit: pageSize,
+      include: [{ model: this.ctx.model.UserInfo,
+        include: [
+          { model: this.ctx.model.RoleInfo, as: 'role', attributes: [] },
+          { model: this.ctx.model.UserData, as: 'detail', attributes: [] },
+        ],
+        raw: true,
+        attributes: [],
+      }],
+      raw: true,
+    });
+    const list = result.rows;
+    const pagination = { total: result.count, current: currentPage, pageSize };
+    return { list, pagination };
+
+  }
+  async salary() {
+    // const { id } = this.ctx.request.body;
+    // cosnt result = await this.model.SalaryLog.sum('money', {where: {type: 1} })
   }
 }
 

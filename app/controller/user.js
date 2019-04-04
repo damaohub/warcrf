@@ -39,11 +39,11 @@ class UserController extends Controller {
   }
   async perfectData() {
     const { id, real_name, id_card, basic_salary, qq, entry_time, card_img_front, card_img_behind } = this.ctx.request.body;
-    const data1 = await this.ctx.service.main.editItem('UserData', id, { id, real_name, id_card, basic_salary, qq, entry_time, card_img_front, card_img_behind });
+    const data1 = await this.ctx.service.main.addItem('UserData', { uid: id, real_name, id_card, basic_salary, qq, entry_time, card_img_front, card_img_behind });
     if (data1[0]) {
       this.ctx.body = { ret: 0, data: { id }, msg: '已提交！' };
     } else {
-      this.ctx.body = { ret: 1002, msg: '更新失败' };
+      this.ctx.body = { ret: 1002, msg: '资料添加失败' };
     }
   }
   async uploadCardimg() {
@@ -56,7 +56,22 @@ class UserController extends Controller {
     const target = path.join(this.config.baseDir, 'app/public/upload/', filename);
     const writeStream = fs.createWriteStream(target);
     await pump(stream, writeStream);
-    this.ctx.body = { ret: 0, data: { url: '/public/upload/' + filename }, msg: '上传完成' };
+    this.ctx.body = { ret: 0, data: 'http://localhost:7001/public/upload/' + filename, msg: '上传完成' };
+  }
+  async salary() {
+    const data = await this.ctx.service.user.salaryList();
+    this.ctx.body = { ret: 0, data, msg: 'ok' };
+  }
+  async rewardPunishment() {
+    const { id, type, money, reason, token } = this.ctx.request.body;
+    const params = this.ctx.helper.verifyToken(token);
+    const user = await this.ctx.service.user.infoById(params.id);
+    const data = await this.ctx.service.main.addItem('SalaryLog', { uid: id, type, money, reason, exec_id: user.id });
+    if (data[1]) {
+      this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
+    } else {
+      this.ctx.body = { ret: 3002, data: data[0], msg: `您输入的手机号“${data[0].username}”已存在` };
+    }
   }
 }
 module.exports = UserController;
