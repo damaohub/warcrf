@@ -60,6 +60,8 @@ class UserController extends Controller {
   }
   async salary() {
     const data = await this.ctx.service.user.salaryList();
+    const salary = await this.ctx.service.user.salary();
+    Object.assign(data, { current_month_money: salary.money });
     this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
   async rewardPunishment() {

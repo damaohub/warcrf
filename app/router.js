@@ -60,6 +60,7 @@ module.exports = app => {
   app.router.post(PRRFIX + '/role/edit', jwt, controller.main.roleEdit);
   app.router.post(PRRFIX + '/role/editrule', jwt, controller.main.roleEditRule);
 
+  app.router.post(PRRFIX + '/order/list', jwt, controller.main.orderList);
 
   app.router.post(PRRFIX + '/gamer/index', jwt, controller.main.gamerIndex);
 };

@@ -10,7 +10,7 @@ module.exports = {
   },
   // 解密，验证
   verifyToken(token) {
-    // const cert = fs.readFileSync(path.join(__dirname, '../public/rsa_public_key.pem')); // 公钥，看后面生成方法
+    // const cert = fs.readFileSync(path.join(__dirname, '../public/rsa_public_key.pem')); // 公钥
     let res = '';
     try {
       const result = jwt.verify(token, cert) || {};

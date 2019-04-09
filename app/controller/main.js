@@ -300,6 +300,11 @@ class MainController extends Controller {
       this.ctx.body = { ret: 1002, msg: '更新失败' };
     }
   }
+  // order
+  async orderList() {
+    const list = await this.ctx.service.main.list('OrderInfo');
+    this.ctx.body = { ret: 0, data: { list }, msg: 'ok' };
+  }
   // gamer
   async gamerIndex() {
     const data = { my_team: [] };

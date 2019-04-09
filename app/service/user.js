@@ -1,5 +1,5 @@
 'use strict';
-
+const moment = require('moment');
 class UserService extends require('egg').Service {
   async infoByName(name) {
     // 假如 我们拿到用户 id 从数据库获取用户详细信息
@@ -103,8 +103,10 @@ class UserService extends require('egg').Service {
 
   }
   async salary() {
-    // const { id } = this.ctx.request.body;
-    // cosnt result = await this.model.SalaryLog.sum('money', {where: {type: 1} })
+    const { id } = this.ctx.request.body;
+    const sql = 'SELECT (SUM(CASE WHEN (`type` = 1 OR `type` = 3) THEN `money` ELSE 0 END) - SUM(CASE WHEN `type` = 2 THEN `money` ELSE 0 END) ) as `money` FROM `salary_log` WHERE `uid` = :uid AND `exec_time` >= "' + moment().date(1).format('YYYY-MM-DD 00:00:00') + '"';
+    const result = await this.ctx.model.query(sql, { replacements: { uid: id }, type: this.ctx.model.QueryTypes.SELECT });
+    return result[0];
   }
 }
 
