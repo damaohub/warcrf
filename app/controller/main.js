@@ -1,6 +1,24 @@
 'use strict';
 const Controller = require('egg').Controller;
 class MainController extends Controller {
+  // data中天赋id列表化成对象数组添加进data
+  async assinTalents(data, col) {
+    const talentsData = await this.ctx.service.main.list('TalentInfo');
+    const talentsMap = {};
+    talentsData.map(item => (
+      talentsMap[item.id] = item.talent_name
+    ));
+    data.list.map(item => {
+      const ids = item[col].split(',');
+      ids.shift();
+      ids.pop();
+      const talents = [];
+      ids.map(id => talents.push(talentsMap[id]));
+      item.talents = talents;
+      return item;
+    });
+    return data;
+  }
   // race
   async raceList() {
     const { ctx } = this;
@@ -181,21 +199,8 @@ class MainController extends Controller {
     this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
   async equipList() {
-    const data = await this.ctx.service.main.equipList();
-    const talentsData = await this.ctx.service.main.list('TalentInfo');
-    const talentsMap = {};
-    talentsData.map(item => (
-      talentsMap[item.id] = item.talent_name
-    ));
-    data.list.map(item => {
-      const ids = item.talent_ids.split(',');
-      ids.shift();
-      ids.pop();
-      const talents = [];
-      ids.map(id => talents.push(talentsMap[id]));
-      item.talents = talents;
-      return item;
-    });
+    const result = await this.ctx.service.main.equipList();
+    const data = await this.assinTalents(result, 'talent_ids');
     this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
   async equipAdd() {
@@ -302,8 +307,61 @@ class MainController extends Controller {
   }
   // order
   async orderList() {
-    const list = await this.ctx.service.main.list('OrderInfo');
+    const list = await this.ctx.service.main.orderList();
     this.ctx.body = { ret: 0, data: { list }, msg: 'ok' };
+  }
+  // account
+  async accountList() {
+    const data = await this.ctx.service.main.accountList();
+    const talentsData = await this.ctx.service.main.list('TalentInfo');
+    const talentsMap = {};
+    talentsData.map(item => (
+      talentsMap[item.id] = item.talent_name
+    ));
+    data.list.map(item => {
+      const ids = item.talent_id.split(',');
+      ids.shift();
+      ids.pop();
+      const talents = [];
+      ids.map(id => talents.push({ id, talent_name: talentsMap[id] }));
+      item.talents = talents;
+      item.need_talent_name = talentsMap[item.need_talent_id];
+      return item;
+    });
+
+    this.ctx.body = { ret: 0, data, msg: 'ok' };
+  }
+  async accountEdit() {
+    const { id } = this.ctx.request.body;
+    const data1 = await this.ctx.service.main.editItem('AccountInfo', id, this.ctx.request.body, true);
+    if (data1[0]) {
+      this.ctx.body = { ret: 0, data: this.ctx.request.body, msg: '修改成功！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '更新失败' };
+    }
+  }
+  async accountAdd() {
+    const { talent_id } = this.ctx.request.body;
+    const talentsData = await this.ctx.service.main.list('TalentInfo', { id: talent_id }, [ 'battle_site' ]);
+    const sites = [];
+    for (let i = 0, len = talentsData.length; i < len; i++) {
+      sites.push(talentsData[i].battle_site);
+    }
+    const data = await this.ctx.service.main.addItem('AccountInfo', Object.assign(this.ctx.request.body, { battle_site: sites }), true);
+    if (data[1]) {
+      this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
+    } else {
+      this.ctx.body = { ret: 3002, data: data[0], msg: '您新增的数据已存在' };
+    }
+  }
+  async accountDel() {
+    const { id } = this.ctx.request.body;
+    const result = await this.ctx.service.main.delItem('AccountInfo', id);
+    if (result) { // 返回 1 删除成功, 0 失败
+      this.ctx.body = { ret: 0, data: { id }, msg: '已经删除！' };
+    } else {
+      this.ctx.body = { ret: 1002, msg: '删除失败' };
+    }
   }
   // gamer
   async gamerIndex() {

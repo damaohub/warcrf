@@ -23,7 +23,7 @@ class MainService extends require('egg').Service {
    * 获取列表(选填过滤条件、属性)
    * @param {string} modelName 所操作的模型名
    * @param {object} filter 过滤条件 默认null
-   * @param {Array} filter 属性，默认null
+   * @param {Array} attributes 属性，默认null
    */
 
   async list(modelName, filter = null, attributes = null) {
@@ -150,14 +150,70 @@ class MainService extends require('egg').Service {
     return result;
   }
 
-  async equipList() { // 获取副本还么实现
+  async equipList() { // 获取副本通过嵌套关联实现
     const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
     const result = await this.ctx.model.EquipInfo.findAndCountAll({
-      attributes: [ 'id', 'equip_name', 'equip_type', 'equip_location', 'talent_ids', 'monster_id', [ this.ctx.model.col('monster.name'), 'monster_name' ]],
+      attributes: [ 'id', 'equip_name', 'equip_type', 'equip_location', 'talent_ids', 'monster_id', [ this.ctx.model.col('monster.name'), 'monster_name' ], [ this.ctx.model.col('monster->instance.name'), 'instance_name' ]],
       offset: (currentPage - 1) * pageSize,
       limit: pageSize,
-      include: { model: this.ctx.model.MonsterInfo, as: 'monster', attributes: [ ] },
+      include: [
+        {
+          model: this.ctx.model.MonsterInfo, as: 'monster', attributes: [],
+          include: [
+            {
+              model: this.ctx.model.MonsterInfo, as: 'instance', attributes: [],
+            },
+          ],
+        },
+      ],
       raw: true,
+    });
+    const list = result.rows;
+    const pagination = { total: result.count, current: currentPage, pageSize };
+    return { list, pagination };
+  }
+
+  async accountList() {
+    const { currentPage = 1, pageSize = 10, account_name, game_role_name, type, organization, profession_id, region_id } = this.ctx.request.body;
+    const filter = {};
+    if (account_name) Object.assign(filter, { account_name });
+    if (game_role_name) Object.assign(filter, { game_role_name });
+    if (type) Object.assign(filter, { type });
+    if (organization) Object.assign(filter, { organization });
+    if (profession_id) Object.assign(filter, { profession_id });
+    if (region_id) Object.assign(filter, { region_id });
+    const result = await this.ctx.model.AccountInfo.findAndCountAll({
+      attributes: { include: [[ this.ctx.model.col('profession_info.profession_name'), 'profession_name' ]] },
+      offset: (currentPage - 1) * pageSize,
+      limit: pageSize,
+      include: { model: this.ctx.model.ProfessionInfo, attributes: [] },
+      raw: true,
+      where: filter,
+    });
+    const list = result.rows;
+    const pagination = { total: result.count, current: currentPage, pageSize };
+    return { list, pagination };
+  }
+  async orderList() {
+    const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
+    const result = await this.ctx.model.OrderInfo.findAndCountAll({
+      attributes: {
+        include: [
+          [ this.ctx.model.col('account_name'), 'name' ],
+          // [ this.ctx.model.col('account_info->account_pwd'), 'account_pwd' ],
+          // [ this.ctx.model.col('account_info.child_name'), 'child_name' ],
+          // [ this.ctx.model.col('account_info.equip_level'), 'equip_level' ],
+          // [ this.ctx.model.col('account_info.game_role_name'), 'game_role_name' ],
+          // [ this.ctx.model.col('account_info.level'), 'level' ],
+          // [ this.ctx.model.col('account_info.organization'), 'organization' ],
+          // [ this.ctx.model.col('account_info.region_id'), 'region_id' ],
+          // [ this.ctx.model.col('account_info.talent_id'), 'talent_id' ],
+          // [ this.ctx.model.col('account_info.type'), 'type' ],
+        ],
+      },
+      offset: (currentPage - 1) * pageSize,
+      limit: pageSize,
+      include: [{ model: this.ctx.model.AccountInfo, attributes: [ 'account_name' ] }, { model: this.ctx.model.OrderItems, as: 'items' }],
     });
     const list = result.rows;
     const pagination = { total: result.count, current: currentPage, pageSize };

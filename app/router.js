@@ -62,6 +62,11 @@ module.exports = app => {
 
   app.router.post(PRRFIX + '/order/list', jwt, controller.main.orderList);
 
+  app.router.post(PRRFIX + '/account/list', jwt, controller.main.accountList);
+  app.router.post(PRRFIX + '/account/add', jwt, controller.main.accountAdd);
+  app.router.post(PRRFIX + '/account/edit', jwt, controller.main.accountEdit);
+  app.router.post(PRRFIX + '/account/del', jwt, controller.main.accountDel);
+
   app.router.post(PRRFIX + '/gamer/index', jwt, controller.main.gamerIndex);
 };
 

@@ -22,7 +22,7 @@ module.exports = app => {
     account_remark: TEXT,
   });
   AccountInfo.associate = () => {
-
+    AccountInfo.belongsTo(app.model.ProfessionInfo, { foreignKey: 'profession_id' });
   };
 
   return AccountInfo;

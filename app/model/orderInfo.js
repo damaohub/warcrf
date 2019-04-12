@@ -15,7 +15,8 @@ module.exports = app => {
     finish_time: DATE,
   });
   OrderInfo.associate = () => {
-
+    OrderInfo.belongsTo(app.model.AccountInfo, { foreignKey: 'aid' });
+    OrderInfo.hasMany(app.model.OrderItems, { as: 'items', foreignKey: 'oid' });
   };
 
   return OrderInfo;
