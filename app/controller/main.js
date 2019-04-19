@@ -307,8 +307,8 @@ class MainController extends Controller {
   }
   // order
   async orderList() {
-    const list = await this.ctx.service.main.orderList();
-    this.ctx.body = { ret: 0, data: { list }, msg: 'ok' };
+    const data = await this.ctx.service.main.orderList();
+    this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
   // account
   async accountList() {

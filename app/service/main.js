@@ -197,23 +197,23 @@ class MainService extends require('egg').Service {
   async orderList() {
     const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
     const result = await this.ctx.model.OrderInfo.findAndCountAll({
-      attributes: {
-        include: [
-          [ this.ctx.model.col('account_name'), 'name' ],
-          // [ this.ctx.model.col('account_info->account_pwd'), 'account_pwd' ],
-          // [ this.ctx.model.col('account_info.child_name'), 'child_name' ],
-          // [ this.ctx.model.col('account_info.equip_level'), 'equip_level' ],
-          // [ this.ctx.model.col('account_info.game_role_name'), 'game_role_name' ],
-          // [ this.ctx.model.col('account_info.level'), 'level' ],
-          // [ this.ctx.model.col('account_info.organization'), 'organization' ],
-          // [ this.ctx.model.col('account_info.region_id'), 'region_id' ],
-          // [ this.ctx.model.col('account_info.talent_id'), 'talent_id' ],
-          // [ this.ctx.model.col('account_info.type'), 'type' ],
-        ],
-      },
+      // attributes: {
+      //   include: [
+      //     [ this.ctx.model.col('account_info.account_name'), 'account_name' ],
+      //     [ this.ctx.model.col('account_info.account_pwd'), 'account_pwd' ],
+      //     [ this.ctx.model.col('account_info.child_name'), 'child_name' ],
+      //     [ this.ctx.model.col('account_info.equip_level'), 'equip_level' ],
+      //     [ this.ctx.model.col('account_info.game_role_name'), 'game_role_name' ],
+      //     [ this.ctx.model.col('account_info.level'), 'level' ],
+      //     [ this.ctx.model.col('account_info.organization'), 'organization' ],
+      //     [ this.ctx.model.col('account_info.region_id'), 'region_id' ],
+      //     [ this.ctx.model.col('account_info.talent_id'), 'talent_id' ],
+      //     [ this.ctx.model.col('account_info.type'), 'type' ],
+      //   ],
+      // },
       offset: (currentPage - 1) * pageSize,
       limit: pageSize,
-      include: [{ model: this.ctx.model.AccountInfo, attributes: [ 'account_name' ] }, { model: this.ctx.model.OrderItems, as: 'items' }],
+      include: [{ model: this.ctx.model.AccountInfo, as: 'account' }, { model: this.ctx.model.OrderItems, as: 'items' }],
     });
     const list = result.rows;
     const pagination = { total: result.count, current: currentPage, pageSize };

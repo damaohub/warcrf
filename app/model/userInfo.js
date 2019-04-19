@@ -6,7 +6,12 @@ module.exports = app => {
     role_id: { type: INTEGER },
     username: STRING(100),
     password: STRING(32),
-    status: TEXT('tiny'),
+    status: {
+      type: TEXT('tiny'),
+      set: () => {
+        this.getDataValue('status') === 1 ? '在职' : '离职';
+      },
+    },
     login_token: STRING,
     last_login_time: DATE,
   });

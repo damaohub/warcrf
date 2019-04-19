@@ -73,18 +73,13 @@ class UserService extends require('egg').Service {
     const { currentPage = 1, pageSize = 10, id } = this.ctx.request.body;
     const result = await this.ctx.model.SalaryLog.findAndCountAll({
       where: { uid: id },
-      attributes: [
-        'id',
-        'uid',
-        'type',
-        'money',
-        'reason',
-        'reason',
-        'exec_time',
-        [ this.ctx.model.col('user_info->detail.real_name'), 'exec_name' ], // 两层include语法为layer1->layer2.col
-        [ this.ctx.model.col('user_info->role.role_name'), 'exec_role' ],
-        [ this.ctx.model.col('user_info->role.id'), 'exec_id' ],
-      ],
+      attributes: {
+        include: [
+          [ this.ctx.model.col('user_info->detail.real_name'), 'exec_name' ], // 两层include语法为layer1->layer2.col
+          [ this.ctx.model.col('user_info->role.role_name'), 'exec_role' ],
+          [ this.ctx.model.col('user_info->role.id'), 'exec_id' ],
+        ],
+      },
       offset: (currentPage - 1) * pageSize,
       limit: pageSize,
       include: [{ model: this.ctx.model.UserInfo,
