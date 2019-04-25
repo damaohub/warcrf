@@ -310,6 +310,43 @@ class MainController extends Controller {
     const data = await this.ctx.service.main.orderList();
     this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
+  async orderInfo() {
+    const data = await this.ctx.service.main.orderInfo();
+    const plainData = data.get({ plain: true });
+    const talentsData = await this.ctx.service.main.list('TalentInfo');
+    const talentsMap = {};
+    talentsData.map(item => (
+      talentsMap[item.id] = item.talent_name
+    ));
+    const ids = plainData.account.talent_id.split(',');
+    ids.shift();
+    ids.pop();
+    const talents = [];
+    ids.map(id => talents.push(talentsMap[id]));
+    plainData.account.talent = talents;
+    this.ctx.body = { ret: 0, data: plainData, msg: 'ok' };
+  }
+  async orderAdd() {
+    const { talent_id } = this.ctx.request.body;
+    const talentsData = await this.ctx.service.main.list('TalentInfo', { id: talent_id }, [ 'battle_site' ]);
+    const sites = [];
+    for (let i = 0, len = talentsData.length; i < len; i++) {
+      sites.push(talentsData[i].battle_site);
+    }
+    let transaction;
+    try {
+      transaction = await this.ctx.model.transaction();
+      await this.ctx.service.main.add(parms, transaction);
+      await this.ctx.service.xxx.xxx(parms1, parms2, transaction);
+      await transaction.commit();
+
+      return true
+    } catch (e) {
+      await transaction.rollback();
+
+      return false
+    }
+  }
   // account
   async accountList() {
     const data = await this.ctx.service.main.accountList();
@@ -342,12 +379,17 @@ class MainController extends Controller {
   }
   async accountAdd() {
     const { talent_id } = this.ctx.request.body;
+    const paramas = this.ctx.request.body;
+    delete paramas.token;
+    delete paramas.time;
+    delete paramas.sign;
+    const transaction = await this.ctx.model.transaction();
     const talentsData = await this.ctx.service.main.list('TalentInfo', { id: talent_id }, [ 'battle_site' ]);
     const sites = [];
     for (let i = 0, len = talentsData.length; i < len; i++) {
       sites.push(talentsData[i].battle_site);
     }
-    const data = await this.ctx.service.main.addItem('AccountInfo', Object.assign(this.ctx.request.body, { battle_site: sites }), true);
+    const data = await this.ctx.service.main.addItem('AccountInfo', Object.assign(paramas, { battle_site: sites }), true, transaction);
     if (data[1]) {
       this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
     } else {
