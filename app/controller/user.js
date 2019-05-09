@@ -21,7 +21,7 @@ class UserController extends Controller {
   }
   async userAdd() {
     const { username, password, role_id } = this.ctx.request.body;
-    const data = await this.ctx.service.main.addItem('UserInfo', { username, password, role_id, sqlunique123: 'username' });
+    const data = await this.ctx.service.main.addItem('UserInfo', { username, password, role_id, unique123: 'username' });
     if (data[1]) {
       this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
     } else {

@@ -58,26 +58,37 @@ class MainService extends require('egg').Service {
      will be true if a new object was created and false if not
   * @param {object} params: where 条件,sqlunique123字段检测是否已存在字段，必须是该对象已存在字段名
   * @param {string} modelName 所操作的模型名
+  * @param {Bealean} isComon 序列化params中的数组后前面是否需要加逗号
+  * @param {Bealean} t 是否需要传递事务参数
   */
 
-  async addItem(modelName, params, isComon = false) {
+  async addItem(modelName, params, isComon = false, t = false) {
     const special = {};
-    if (params.hasOwnProperty('sqlunique123')) {
-      const param = params.sqlunique123;
-      special[param] = params[param];
-      delete params.sqlunique123;
+    if (params.hasOwnProperty('unique123')) {
+      const param = params.unique123;
+      if (Array.isArray(param)) {
+        for (let i = 0, len = param.length; i < len; i++) {
+          special[param[i]] = params[param[i]];
+        }
+      } else {
+        special[param] = params[param];
+      }
+      delete params.unique123;
       delete params[param];
     }
-    const sql = {};
+    const options = {};
     const normalizeParams = await this.normalizeData(params, isComon);
     if (Object.keys(special).length !== 0) {
-      sql.where = special;
-      sql.defaults = normalizeParams;
+      options.where = special;
+      options.defaults = normalizeParams;
     } else {
-      sql.where = normalizeParams;
+      options.where = normalizeParams;
     }
-    console.log(sql);
-    const result = await this.ctx.model[modelName].findOrCreate(sql);
+    if (t) {
+      const trs = await this.ctx.model.transaction();
+      options.transaction = t || trs;
+    }
+    const result = await this.ctx.model[modelName].findOrCreate(options);
     return result;
   }
 

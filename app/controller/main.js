@@ -1,6 +1,7 @@
 'use strict';
 const Controller = require('egg').Controller;
 class MainController extends Controller {
+
   // data中天赋id列表化成对象数组添加进data
   async assinTalents(data, col) {
     const talentsData = await this.ctx.service.main.list('TalentInfo');
@@ -125,6 +126,11 @@ class MainController extends Controller {
   }
   async instanceList() {
     const list = await this.ctx.service.main.list('MonsterInfo', { instance_or_monster: 0 }, [ 'id', 'name', 'instance_type' ]);
+    this.ctx.body = { ret: 0, data: { list }, msg: 'ok' };
+  }
+  async instanceMonsters() {
+    const { instance_id } = this.ctx.request.body;
+    const list = await this.ctx.service.main.list('MonsterInfo', { instance_id });
     this.ctx.body = { ret: 0, data: { list }, msg: 'ok' };
   }
   async monsterAdd() {
@@ -323,12 +329,16 @@ class MainController extends Controller {
     ids.pop();
     const talents = [];
     ids.map(id => talents.push(talentsMap[id]));
+    const profession = await this.ctx.model.ProfessionInfo.findByPk(plainData.account.profession_id);
+    const professionName = profession.get({ plain: true }).profession_name;
     plainData.account.talent = talents;
+    plainData.account.profession_name = professionName;
     this.ctx.body = { ret: 0, data: plainData, msg: 'ok' };
   }
   async orderAdd() {
-    const { talent_id } = this.ctx.request.body;
-    const talentsData = await this.ctx.service.main.list('TalentInfo', { id: talent_id }, [ 'battle_site' ]);
+    const { account, proj } = this.ctx.request.body;
+    const user = this.ctx.helper.verifyToken(this.ctx.request.body.token);
+    const talentsData = await this.ctx.service.main.list('TalentInfo', { id: account.talent_id }, [ 'battle_site' ]);
     const sites = [];
     for (let i = 0, len = talentsData.length; i < len; i++) {
       sites.push(talentsData[i].battle_site);
@@ -336,15 +346,44 @@ class MainController extends Controller {
     let transaction;
     try {
       transaction = await this.ctx.model.transaction();
-      await this.ctx.service.main.add(parms, transaction);
-      await this.ctx.service.xxx.xxx(parms1, parms2, transaction);
+      // await this.ctx.model.AccountInfo.findOrCreate({
+      //   where: {
+      //     account_name: account.account_name,
+      //   },
+      //   defaults: account,
+      //   transaction,
+      // });
+      const aInfo = await this.ctx.service.main.addItem('AccountInfo', Object.assign(account, {
+        account_phone: account.phone,
+        account_remark: account.remark,
+        type: 1,
+        battle_site: sites,
+        unique123: [ 'account_name', 'child_name', 'game_role_name' ],
+      }), true, transaction);
+      const order = await this.ctx.service.main.addItem('OrderInfo', Object.assign({
+        aid: aInfo.id,
+        phone: account.phone,
+        remark: account.remark,
+        uid: user.id,
+        status: 1,
+        order_type: 1,
+      }), true, transaction);
+      await this.ctx.service.main.addItem('OrderItem', {
+        oid: order.id,
+        aid: aInfo.id,
+        instance_or_secret: proj.instance_or_secret,
+        instance_id: proj.instance_id,
+        difficult: proj.difficult,
+        num: proj.num,
+        finish_num: 0,
+        week_used: 0,
+        status: 0,
+      }, true, transaction);
       await transaction.commit();
 
-      return true
     } catch (e) {
       await transaction.rollback();
-
-      return false
+      console.log(e);
     }
   }
   // account
@@ -383,13 +422,12 @@ class MainController extends Controller {
     delete paramas.token;
     delete paramas.time;
     delete paramas.sign;
-    const transaction = await this.ctx.model.transaction();
     const talentsData = await this.ctx.service.main.list('TalentInfo', { id: talent_id }, [ 'battle_site' ]);
     const sites = [];
     for (let i = 0, len = talentsData.length; i < len; i++) {
       sites.push(talentsData[i].battle_site);
     }
-    const data = await this.ctx.service.main.addItem('AccountInfo', Object.assign(paramas, { battle_site: sites }), true, transaction);
+    const data = await this.ctx.service.main.addItem('AccountInfo', Object.assign(paramas, { battle_site: sites, unique123: 'account_name' }), true);
     if (data[1]) {
       this.ctx.body = { ret: 0, data: data[0], msg: '新增成功！' };
     } else {

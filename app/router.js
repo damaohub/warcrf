@@ -38,6 +38,7 @@ module.exports = app => {
 
   app.router.post(PRRFIX + '/monster/list', jwt, controller.main.monsterList);
   app.router.post(PRRFIX + '/monster/instancelist', jwt, controller.main.instanceList);
+  app.router.post(PRRFIX + '/monster/instancemonsters', jwt, controller.main.instanceMonsters);
   app.router.post(PRRFIX + '/monster/add', jwt, controller.main.monsterAdd);
   app.router.post(PRRFIX + '/monster/edit', jwt, controller.main.monsterEdit);
   app.router.post(PRRFIX + '/monster/del', jwt, controller.main.monsterDel);
@@ -62,6 +63,7 @@ module.exports = app => {
 
   app.router.post(PRRFIX + '/order/list', jwt, controller.main.orderList);
   app.router.post(PRRFIX + '/order/info', jwt, controller.main.orderInfo);
+  app.router.post(PRRFIX + '/order/add', jwt, controller.main.orderAdd);
 
   app.router.post(PRRFIX + '/account/list', jwt, controller.main.accountList);
   app.router.post(PRRFIX + '/account/add', jwt, controller.main.accountAdd);
