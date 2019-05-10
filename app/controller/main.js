@@ -346,13 +346,6 @@ class MainController extends Controller {
     let transaction;
     try {
       transaction = await this.ctx.model.transaction();
-      // await this.ctx.model.AccountInfo.findOrCreate({
-      //   where: {
-      //     account_name: account.account_name,
-      //   },
-      //   defaults: account,
-      //   transaction,
-      // });
       const aInfo = await this.ctx.service.main.addItem('AccountInfo', Object.assign(account, {
         account_phone: account.phone,
         account_remark: account.remark,
@@ -360,20 +353,44 @@ class MainController extends Controller {
         battle_site: sites,
         unique123: [ 'account_name', 'child_name', 'game_role_name' ],
       }), true, transaction);
-      const order = await this.ctx.service.main.addItem('OrderInfo', Object.assign({
+      const order = await this.ctx.service.main.addItem('OrderInfo', {
         aid: aInfo.id,
         phone: account.phone,
         remark: account.remark,
         uid: user.id,
         status: 1,
         order_type: 1,
-      }), true, transaction);
+      }, true, transaction);
+      if (parseInt(proj.instance_or_secret) === 2 && proj.difficult === 'm') {
+        if (proj.monster_id) {
+          proj.monster_id.sort();
+          // 判断是否连续
+          const result = proj.monster_id.sort().every((item, index, arr) => {
+            if (index === (arr.length - 1)) {
+              return parseInt(item, 10) - parseInt(arr[index - 1], 10) === 1;
+            }
+            return parseInt(arr[index + 1], 10) - parseInt(item, 10) === 1;
+          });
+          if (proj.monster_id.length > 1 && !result) {
+            transaction.rollback();
+            this.ctx.body = { ret: 1111, msg: '副本Boss必须连续选择' };
+          }
+          // 分割数组
+          proj.monster_id.join(',');
+        } else {
+          transaction.rollback();
+          this.ctx.body = { ret: 1111, msg: '请选择要完成的副本Boss' };
+        }
+      } else {
+        proj.monster_id = '';
+      }
       await this.ctx.service.main.addItem('OrderItem', {
         oid: order.id,
         aid: aInfo.id,
         instance_or_secret: proj.instance_or_secret,
         instance_id: proj.instance_id,
         difficult: proj.difficult,
+        monster_id: proj.monster_id,
         num: proj.num,
         finish_num: 0,
         week_used: 0,
