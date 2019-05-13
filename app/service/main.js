@@ -40,12 +40,13 @@ class MainService extends require('egg').Service {
   * @param {string} modelName: 所操作的模型名
   */
 
-  async getList(modelName) {
+  async getList(modelName, filter = null) {
     const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
     const result = await this.ctx.model[modelName].findAndCountAll({
       offset: (currentPage - 1) * pageSize,
       limit: pageSize,
       raw: true,
+      where: filter,
     });
     const list = result.rows;
     const pagination = { total: result.count, current: currentPage, pageSize };
@@ -122,8 +123,9 @@ class MainService extends require('egg').Service {
 
   // 联表查询
   async talentList() {
-    const { currentPage = 1, pageSize = 10 } = this.ctx.request.body;
+    const { currentPage = 1, pageSize = 10, profession_id } = this.ctx.request.body;
     const result = await this.ctx.model.TalentInfo.findAndCountAll({
+      where: profession_id ? { profession_id } : null,
       attributes: [ 'id', 'profession_id', 'talent_name', this.ctx.model.col('profession.profession_name'), this.ctx.model.col('profession.profession_img') ],
       offset: (currentPage - 1) * pageSize,
       limit: pageSize,

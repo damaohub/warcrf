@@ -337,7 +337,8 @@ class MainController extends Controller {
   }
   async orderAdd() {
     const { account, proj } = this.ctx.request.body;
-    const user = this.ctx.helper.verifyToken(this.ctx.request.body.token);
+    const authToken = this.ctx.header.authorization.substring(7); // 获取header里的authorization
+    const user = this.ctx.helper.verifyToken(authToken);
     const talentsData = await this.ctx.service.main.list('TalentInfo', { id: account.talent_id }, [ 'battle_site' ]);
     const sites = [];
     for (let i = 0, len = talentsData.length; i < len; i++) {
@@ -354,48 +355,47 @@ class MainController extends Controller {
         unique123: [ 'account_name', 'child_name', 'game_role_name' ],
       }), true, transaction);
       const order = await this.ctx.service.main.addItem('OrderInfo', {
-        aid: aInfo.id,
+        aid: aInfo[0].id,
         phone: account.phone,
         remark: account.remark,
         uid: user.id,
         status: 1,
         order_type: 1,
       }, true, transaction);
-      if (parseInt(proj.instance_or_secret) === 2 && proj.difficult === 'm') {
-        if (proj.monster_id) {
-          proj.monster_id.sort();
-          // 判断是否连续
-          const result = proj.monster_id.sort().every((item, index, arr) => {
-            if (index === (arr.length - 1)) {
-              return parseInt(item, 10) - parseInt(arr[index - 1], 10) === 1;
+      const items = [];
+      for (let i = 0, len = proj.length; i < len; i++) {
+        const item = proj[i];
+        if (parseInt(item.instance_or_secret) === 2 && item.difficult === 'm') {
+          if (item.monster_id) {
+            item.monster_id.sort();
+            // 判断是否连续
+            const result = item.monster_id.sort().every((elem, index, arr) => {
+              if (index === (arr.length - 1)) {
+                return parseInt(elem, 10) - parseInt(arr[index - 1], 10) === 1;
+              }
+              return parseInt(arr[index + 1], 10) - parseInt(elem, 10) === 1;
+            });
+            if (item.monster_id.length > 1 && !result) {
+              transaction.rollback();
+              this.ctx.body = { ret: 1111, msg: '副本Boss必须连续选择' };
             }
-            return parseInt(arr[index + 1], 10) - parseInt(item, 10) === 1;
-          });
-          if (proj.monster_id.length > 1 && !result) {
+            // 分割数组
+            item.monster_id.join(',');
+          } else {
             transaction.rollback();
-            this.ctx.body = { ret: 1111, msg: '副本Boss必须连续选择' };
+            this.ctx.body = { ret: 1111, msg: '请选择要完成的副本Boss' };
           }
-          // 分割数组
-          proj.monster_id.join(',');
         } else {
-          transaction.rollback();
-          this.ctx.body = { ret: 1111, msg: '请选择要完成的副本Boss' };
+          item.monster_id = '';
         }
-      } else {
-        proj.monster_id = '';
+        items.push(Object.assign({
+          oid: order[0].id,
+          aid: aInfo[0].id,
+          finish_num: 0,
+          week_used: 0,
+          status: 0 }, item));
       }
-      await this.ctx.service.main.addItem('OrderItem', {
-        oid: order.id,
-        aid: aInfo.id,
-        instance_or_secret: proj.instance_or_secret,
-        instance_id: proj.instance_id,
-        difficult: proj.difficult,
-        monster_id: proj.monster_id,
-        num: proj.num,
-        finish_num: 0,
-        week_used: 0,
-        status: 0,
-      }, true, transaction);
+      await this.ctx.model.OrderItems.bulkCreate(items, transaction);
       await transaction.commit();
 
     } catch (e) {
