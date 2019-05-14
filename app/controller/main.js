@@ -465,6 +465,19 @@ class MainController extends Controller {
     const data = { my_team: [] };
     this.ctx.body = { ret: 0, data, msg: 'ok' };
   }
+  // ident
+  async ident() {
+    const { content } = this.ctx.request.body;
+    const content1 = content.split(/[\n]/);
+    const contentMap = {};
+    content1.map(elem => {
+      const input = elem.trim();
+      const inputArr = input.split(':');
+      contentMap[inputArr[0]] = inputArr[1];
+      return elem;
+    });
+    console.log(contentMap);
+  }
 }
 
 module.exports = MainController;
