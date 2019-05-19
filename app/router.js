@@ -65,6 +65,8 @@ module.exports = app => {
   app.router.post(PRRFIX + '/order/info', jwt, controller.main.orderInfo);
   app.router.post(PRRFIX + '/order/add', jwt, controller.main.orderAdd);
 
+  app.router.post(PRRFIX + '/ident/ident', jwt, controller.main.ident);
+
   app.router.post(PRRFIX + '/account/list', jwt, controller.main.accountList);
   app.router.post(PRRFIX + '/account/add', jwt, controller.main.accountAdd);
   app.router.post(PRRFIX + '/account/edit', jwt, controller.main.accountEdit);

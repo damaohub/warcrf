@@ -472,11 +472,15 @@ class MainController extends Controller {
     const contentMap = {};
     content1.map(elem => {
       const input = elem.trim();
-      const inputArr = input.split(':');
+      let inputArr = input.split(':');
+      if (inputArr.length < 2) {
+        inputArr = input.split('：');
+      }
       contentMap[inputArr[0]] = inputArr[1];
       return elem;
     });
-    console.log(contentMap);
+    
+    this.ctx.body = { ret: 0, data: { contentMap }, msg: 'ok' };
   }
 }
 
