@@ -467,20 +467,56 @@ class MainController extends Controller {
   }
   // ident
   async ident() {
+    // const talent = await this.ctx.service.main.list('TalentInfo');
+    // const profession = await this.ctx.service.main.list('professionInfo');
+    // const talentMap = {};
+    // const professionMap = {};
+    // talent.map(item => (talentMap[item.talent_name] = item.id));
+    // profession.map(item => (professionMap[item.profession_name] = profession.id));
     const { content } = this.ctx.request.body;
-    const content1 = content.split(/[\n]/);
-    const contentMap = {};
-    content1.map(elem => {
-      const input = elem.trim();
-      let inputArr = input.split(':');
-      if (inputArr.length < 2) {
-        inputArr = input.split('：');
-      }
-      contentMap[inputArr[0]] = inputArr[1];
-      return elem;
-    });
-    
-    this.ctx.body = { ret: 0, data: { contentMap }, msg: 'ok' };
+    // const content1 = content.split(/[\n+]|;/);
+    const content1 = content.split(/[\n+]|;/);
+    // const contentMap = {};
+    // content1.map(elem => {
+    //   const input = elem.trim();
+    //   let inputArr = input.split(':');
+    //   if (inputArr.length < 2) {
+    //     inputArr = input.split('：');
+    //   }
+    //   contentMap[inputArr[0]] = inputArr[1];
+    //   return elem;
+    // });
+    // const keyWords = this.app.config.KeyWordArr;
+    // const dataMap = {};
+    // for (const [ key, value ] of Object.entries(contentMap)) {
+    //   if (keyWords.account_name.includes(key)) {
+    //     dataMap.account_name = value;
+    //   }
+    //   if (keyWords.account_pwd.includes(key)) {
+    //     dataMap.account_pwd = value;
+    //   }
+    //   if (keyWords.child_name.includes(key)) {
+    //     dataMap.child_name = value;
+    //   }
+    //   if (keyWords.game_role_name.includes(key)) {
+    //     dataMap.game_role_name = value;
+    //   }
+    //   if (keyWords.organization.includes(key)) {
+    //     if (value === '联盟' || value.toLowerCase() === 'lm') {
+    //       dataMap.organization = 0;
+    //     }
+    //     if (value === '部落' || value.toLowerCase() === 'bl') {
+    //       dataMap.organization = 1;
+    //     }
+    //   }
+    //   // if (keyWords.profession_id.includes(key)) {
+    //   //   dataMap.profession_id = professionMap.value;
+    //   // }
+    //   // if (keyWords.talent_id.includes(key)) {
+    //   //   Array.isArray(value) dataMap.talent_id = [ talentMap.value ];
+    //   // }
+    // }
+    this.ctx.body = { ret: 0, data: { content1 }, msg: 'ok' };
   }
 }
 
