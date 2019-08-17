@@ -7,6 +7,7 @@ module.exports = app => {
   const { router, controller, middleware } = app;
   const jwt = middleware.jwt();
   router.get('/', controller.home.index);
+  router.post('/dlt', controller.lottery.dlt);
 
   // api
   app.router.post(PRRFIX + '/login/login', controller.login.login);
