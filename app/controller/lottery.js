@@ -5,8 +5,6 @@ const Controller = require('egg').Controller;
 class LotteryController extends Controller {
 
   async getCount(a1, a2) {
-    // console.log(a2);
-    // console.log(a2);
     if (!a1 || !a2) return false;
     if (a1.length !== a2.length) return false;
     const countArr = [];
@@ -15,7 +13,7 @@ class LotteryController extends Controller {
       const b2 = a2.sort();
       for (let i = 0; i < a1.length; i++) {
         if (b1[i] === b2[i]) {
-          countArr.push('count');
+          countArr.push(i);
         }
       }
     }
@@ -24,12 +22,12 @@ class LotteryController extends Controller {
 
   async dlt() {
     const { redArr, blueArr } = this.ctx.request.body;
+    console.log(redArr);
     const r = redArr.sort();
     const b = blueArr.sort();
     const result = await this.ctx.curl('http://www.lottery.gov.cn/api/lottery_kj_detail_new.jspx?_ltype=4&_term=', {
       method: 'POST',
       dataType: 'json',
-      // 3 秒超时
       timeout: 5000,
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
@@ -45,8 +43,6 @@ class LotteryController extends Controller {
       const tb = t.slice(5);
       const rCount = await this.getCount(r, tr);
       const bCount = await this.getCount(b, tb);
-      // console.log(br);
-      // console.log(!b);
       if (rCount === 5 && bCount === 2) {
         this.ctx.body = details[0];
       } else if (rCount === 5 && bCount === 1) {
@@ -73,12 +69,16 @@ class LotteryController extends Controller {
         this.ctx.body = details[8];
       } else if (rCount === 0 && bCount === 2) {
         this.ctx.body = details[8];
+      } else if (rCount === false || bCount === false) {
+        this.ctx.body = {
+          allmoney: undefined,
+          level: '输入出错（BUG）',
+        };
       } else {
-        // this.ctx.body = {
-        //   allmoney: '0',
-        //   level: '未中奖',
-        // };
-        this.ctx.body = data;
+        this.ctx.body = {
+          allmoney: '0',
+          level: '未中奖',
+        };
       }
     }
   }
