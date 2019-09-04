@@ -7,7 +7,10 @@ module.exports = app => {
   const { router, controller, middleware } = app;
   const jwt = middleware.jwt();
   router.get('/', controller.home.index);
-  router.post('/dlt', controller.lottery.dlt);
+
+  router.post('/test', controller.lottery.test);
+  router.get('/dlt', controller.lottery.dlt);
+  router.post('/checkdlt', controller.lottery.checkDlt);
 
   // api
   app.router.post(PRRFIX + '/login/login', controller.login.login);

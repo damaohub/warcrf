@@ -67,6 +67,8 @@ module.exports = appInfo => {
       // ignore: '/api',
     },
   };
+
+
   config.KeyWordArr = {
     account_name: [ '帐号', '账号', '战网', '游戏账号', '游戏帐号', '通行证', '战网帐号', '战网账号', '登录账号', '登陆账号', '登陆帐号', '登录帐号' ],
     account_pwd: [ '密码', '登录密码', '登陆密码', '游戏密码' ],
