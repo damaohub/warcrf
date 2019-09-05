@@ -6,14 +6,14 @@ class LotteryController extends Controller {
 
   async getCount(a1, a2) {
     if (!a1 || !a2) return false;
-    if (a1.length !== a2.length) return false;
+    if (a1.length < a2.length) return false;
     const countArr = [];
     if (Array.isArray(a1) && Array.isArray(a2)) {
-      const b1 = a1.sort();
-      const b2 = a2.sort();
-      for (let i = 0; i < a1.length; i++) {
-        if (b1[i] === b2[i]) {
-          countArr.push(i);
+      const arr = a1.concat(a2);
+      arr.sort((a, b) => (a - b));
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === arr[i + 1]) {
+          countArr.push(arr[i]);
         }
       }
     }
@@ -37,7 +37,6 @@ class LotteryController extends Controller {
 
   async checkDlt() {
     const { redArr, blueArr, term } = this.ctx.request.body;
-    console.log(this.ctx.request.body);
     if (!redArr || !blueArr || !term) {
       this.ctx.response.status = 400;
       this.ctx.body = { message: '请求参数错误' };
@@ -90,7 +89,7 @@ class LotteryController extends Controller {
       } else if (rCount === false || bCount === false) {
         this.ctx.body = {
           allmoney: undefined,
-          level: '输入出错（BUG）',
+          level: '验证出错',
           lottery,
         };
       } else {
