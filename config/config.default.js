@@ -85,5 +85,29 @@ module.exports = appInfo => {
     remark: [ '备注', '订单备注', 'R币备注', 'r币备注', 'roll币备注', 'Roll币备注', 'ROLL币', 'roll币', '特殊备注', '备注及要求（团本备注R币，不备注默认不R）', 'ROLL币需求（要求备注）' ],
     taobaoid: [ '订单编号', '订单号', '原定单编号' ],
   };
+
+  config.redis = {
+    client: {
+      port: 6379,
+      host: '127.0.0.1',
+      password: '',
+      db: 0,
+    },
+  };
+
+  exports.io = {
+    init: { wsEngine: 'ws' }, // passed to engine.io
+    namespace: {
+      '/': {
+        connectionMiddleware: [],
+        packetMiddleware: [],
+      },
+    },
+    redis: {
+      host: '127.0.0.1',
+      port: 6379,
+      db: 0,
+    },
+  };
   return config;
 };

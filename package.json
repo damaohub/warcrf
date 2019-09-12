@@ -6,8 +6,10 @@
   "dependencies": {
     "egg": "^2.2.1",
     "egg-cors": "^2.1.2",
+    "egg-redis": "^2.4.0",
     "egg-scripts": "^2.5.0",
     "egg-sequelize": "^4.3.1",
+    "egg-socket.io": "^4.1.6",
     "jsonwebtoken": "^8.5.0",
     "moment": "^2.24.0",
     "mysql2": "^1.6.5",
@@ -27,9 +29,9 @@
     "node": ">=8.9.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-egg1",
+    "start": "egg-scripts start --daemon --title=egg-server-egg1 --sticky",
     "stop": "egg-scripts stop --title=egg-server-egg1",
-    "dev": "egg-bin dev",
+    "dev": "egg-bin dev --sticky",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "egg-bin test",
