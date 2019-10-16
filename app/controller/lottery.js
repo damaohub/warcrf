@@ -104,8 +104,8 @@ class LotteryController extends Controller {
   }
 
   async dlt() {
-    const result = await this.getDlt();
-    this.ctx.body = { dlt: result.data[0] };
+    const result = await this.ctx.app.redis.get('dlt');
+    this.ctx.body = { dlt: JSON.parse(result) };
   }
 
   async test() {
