@@ -86,15 +86,6 @@ module.exports = appInfo => {
     taobaoid: [ '订单编号', '订单号', '原定单编号' ],
   };
 
-  config.redis = {
-    client: {
-      port: 6379,
-      host: '127.0.0.1',
-      password: '',
-      db: 0,
-    },
-  };
-
   exports.io = {
     init: { wsEngine: 'ws' }, // passed to engine.io
     namespace: {
@@ -102,11 +93,6 @@ module.exports = appInfo => {
         connectionMiddleware: [],
         packetMiddleware: [],
       },
-    },
-    redis: {
-      host: '127.0.0.1',
-      port: 6379,
-      db: 0,
     },
   };
   return config;
